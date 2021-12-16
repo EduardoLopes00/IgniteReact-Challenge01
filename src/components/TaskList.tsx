@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 import '../styles/tasklist.scss'
 
@@ -14,16 +14,55 @@ export function TaskList() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [newTaskTitle, setNewTaskTitle] = useState('');
 
+  function isEmpty(value: string): boolean {
+    return value == '';
+  }
+  
+  function validateTaskTitle(): string {
+    if (isEmpty(newTaskTitle)) {
+      return 'A Task deve conter um título!';
+    }
+
+    return '';
+  }
+
+  function generateNewId(): number {   
+    const newId = Math.floor(Math.random() * (tasks.length * 10));
+    
+    if (tasks.find((value: Task) => value.id == newId)) {
+      return generateNewId();
+    }
+    
+    return newId;
+  }
+  
   function handleCreateNewTask() {
-    // Crie uma nova task com um id random, não permita criar caso o título seja vazio.
+
+    const err = validateTaskTitle();
+    
+    if (err != '') {
+      alert('Ocorreu um erro ao criar a task: ' + err);      
+    } else {
+      const newTask: Task = {
+        id: generateNewId(),
+        title: newTaskTitle,
+        isComplete: false
+      }
+      
+      setTasks([...tasks, newTask] );
+    }
   }
 
   function handleToggleTaskCompletion(id: number) {
-    // Altere entre `true` ou `false` o campo `isComplete` de uma task com dado ID
+    let changedTasks = tasks;
+
+    changedTasks[tasks.findIndex(value => value.id == id)].isComplete = !changedTasks[tasks.findIndex(value => value.id == id)].isComplete;  
+
+    setTasks([...changedTasks]);
   }
 
   function handleRemoveTask(id: number) {
-    // Remova uma task da listagem pelo ID
+    setTasks(tasks.filter(task => task.id != id))
   }
 
   return (
