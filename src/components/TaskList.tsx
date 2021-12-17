@@ -41,7 +41,7 @@ export function TaskList() {
     const err = validateTaskTitle();
     
     if (err != '') {
-      alert('Ocorreu um erro ao criar a task: ' + err);      
+      return;
     } else {
       const newTask: Task = {
         id: generateNewId(),
